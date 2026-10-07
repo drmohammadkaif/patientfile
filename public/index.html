@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PatientFile – Under maintenance</title>
+<meta name="description" content="PatientFile is under maintenance. Leave your email and we will notify you when we are back.">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛠️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:#fff;color:#000;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 24px}
+main{width:100%;max-width:1200px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:48px;align-items:center}
+h1{font-family:"Playfair Display",Georgia,serif;font-weight:500;font-size:clamp(64px,9vw,108px);line-height:1;margin:0 0 6px;letter-spacing:-.02em;color:#000}
+h2{font-family:"Playfair Display",Georgia,serif;font-weight:500;font-size:clamp(24px,3vw,38px);margin:0 0 26px;color:#000}
+.lead{font-size:17px;line-height:1.9;margin:0 0 36px;max-width:34em;color:#000}
+form{display:grid;gap:14px;max-width:550px}
+input[type=email]{width:100%;height:70px;padding:0 26px;font:inherit;font-size:17px;color:#000;background:#f8f8fb;border:2px solid #dcdbe8;border-radius:8px}
+input::placeholder{color:#b9b4e6}
+input:focus-visible,button:focus-visible{outline:3px solid #7b6fe0;outline-offset:2px}
+button{height:70px;border:0;border-radius:8px;background:#261e44;color:#fff;font:600 17px Inter,sans-serif;cursor:pointer;transition:opacity .15s,transform .15s}
+button:hover{opacity:.9}
+button:active{transform:scale(.99)}
+button:disabled{opacity:.6;cursor:wait}
+#msg{min-height:24px;margin:0;font-size:15px;line-height:1.5;color:#000}
+#msg.ok{color:#1f7a4d}#msg.err{color:#b3261e}
+.hp{position:absolute;left:-9999px;opacity:0}
+.art img{width:100%;height:auto;display:block}
+@media (max-width:860px){main{grid-template-columns:1fr;gap:20px}.art{order:-1;max-width:520px;margin:0 auto}input[type=email],button{height:60px}}
+</style>
+</head>
+<body>
+<main>
+  <section>
+    <h1>Sorry!</h1>
+    <h2>We’re doing some maintenance</h2>
+    <p class="lead">PatientFile is getting an upgrade. We’re working to bring the site back as soon as possible. Leave your email and we’ll let you know the moment we’re live.</p>
+    <form id="f" novalidate>
+      <input type="email" id="email" name="email" placeholder="Enter Your Email" autocomplete="email" aria-label="Email address" required>
+      <input type="text" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button type="submit" id="btn">Notify Me</button>
+      <p id="msg" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+  <section class="art">
+    <img src="illustration.png" alt="Illustration of two people repairing a laptop with a crane, a wrench and a warning sign" width="990" height="970">
+  </section>
+</main>
+<script>
+(function () {
+  // Paste your free Web3Forms access key between the quotes (see README.md).
+  var ACCESS_KEY = "YOUR_ACCESS_KEY_HERE";
+
+  var form = document.getElementById("f"),
+      email = document.getElementById("email"),
+      btn = document.getElementById("btn"),
+      msg = document.getElementById("msg");
+
+  function say(t, c) { msg.textContent = t; msg.className = c || ""; }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = email.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
+      say("Enter a valid email address, like name@example.com.", "err");
+      email.focus();
+      return;
+    }
+    if (form.botcheck.value) { return; }
+    btn.disabled = true;
+    say("Saving your email…");
+    fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ access_key: ACCESS_KEY, subject: "New PatientFile signup", from_name: "PatientFile maintenance page", email: v, botcheck: "" })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (!d.success) { throw new Error("failed"); }
+      say("Thank you! We’ll email you when PatientFile is back.", "ok");
+      form.reset();
+    })
+    .catch(function () { say("We couldn’t save your email. Check your connection and try again.", "err"); })
+    .finally(function () { btn.disabled = false; });
+  });
+})();
+</script>
+</body>
+</html>
